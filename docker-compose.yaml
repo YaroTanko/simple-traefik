@@ -24,7 +24,7 @@ services:
       # htpasswd -Bnb username password | sed -e s/\\$/\\$\\$/g
 
       # define traefik dashboard router and service
-      - "traefik.http.routers.traefik.rule=Host(`foobar.example.invalid`)" # change hostname!
+      - "traefik.http.routers.traefik.rule=Host(`yaroslavtanko.dev`)" # change hostname!
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=tlschallenge"
       - "traefik.http.routers.traefik.entrypoints=web-secure"
