@@ -2,16 +2,15 @@
 # see https://github.com/compose-spec/compose-spec/blob/master/spec.md
 
 services:
-
   # traefik container
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.2
     restart: unless-stopped
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro        # It's not recommended mounting the docker socket into a container -> see https://github.com/wollomatic/traefik2-hardened
-      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro  # static traefik configuration
-      - ./config/dynamic.yaml:/etc/traefik/dynamic.yaml:ro  # dynamic traefik configuration
-      - ./config/acme.json:/etc/traefik/acme.json           # TLS certificate storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro # It's not recommended mounting the docker socket into a container -> see https://github.com/wollomatic/traefik2-hardened
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro # static traefik configuration
+      - ./config/dynamic.yaml:/etc/traefik/dynamic.yaml:ro # dynamic traefik configuration
+      - ./config/acme.json:/etc/traefik/acme.json # TLS certificate storage
     labels:
       - "traefik.enable=true"
 
@@ -38,7 +37,7 @@ services:
 
   # whoami example container
   whoami:
-    image: traefik/whoami:latest
+    image: traefik/whoami:v1.10
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -51,10 +50,9 @@ services:
     networks:
       - traefik-servicenet
 
-
-
 networks:
   traefik-servicenet:
     external: true
-    name: traefik-servicenet # create this network before running this deployment:
-                             # docker network create traefik-servicenet
+    name:
+      traefik-servicenet # create this network before running this deployment:
+      # docker network create traefik-servicenet
