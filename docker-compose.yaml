@@ -5,7 +5,7 @@ services:
 
   # traefik container
   traefik:
-    image: traefik:v3.0.0-beta2 # still in beta, use v2.9.6 for stable version
+    image: traefik:v3.2 # still in beta, use v2.9.6 for stable version
                                 # please check version tag to use the most current version
     restart: unless-stopped
     volumes:
@@ -44,7 +44,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.entrypoints=web-secure"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.example.invalid`)" # change hostname!
+      - "traefik.http.routers.whoami.rule=Host(`yaroslavtanko.dev`)" # change hostname!
       - "traefik.http.routers.whoami.tls=true"
       - "traefik.http.routers.whoami.tls.certresolver=tlschallenge"
       - "traefik.http.routers.whoami.middlewares=secHeaders@file"
