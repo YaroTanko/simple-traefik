@@ -23,13 +23,13 @@ entryPoints:
   web-secure:
     address: ":443" # https
 certificatesResolvers:
-  tlschallenge:
+  httpchallenge:
     acme:
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # IMPORTANT: comment out this line to get production ready certificates. After this, clear acme.json file.
       email: tanko.yaroslav@gmail.com
-      storage: /etc/traefik/acme.json # chmod 600 this file on the host system
-      tlsChallenge: {}
+      storage: /etc/traefik/acme.json
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web
 global:
   checkNewVersion: true
   sendAnonymousUsage: true # disable this if you don't want to send anonymous usage data to traefik

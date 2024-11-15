@@ -2,53 +2,37 @@
 # see https://github.com/compose-spec/compose-spec/blob/master/spec.md
 
 services:
-  # traefik container
+  # traefik container 
   traefik:
-    image: traefik:v3.2
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # It's not recommended mounting the docker socket into a container -> see https://github.com/wollomatic/traefik2-hardened
-      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro # static traefik configuration
-      - ./config/dynamic.yaml:/etc/traefik/dynamic.yaml:ro # dynamic traefik configuration
-      - ./config/acme.json:/etc/traefik/acme.json # TLS certificate storage
-    labels:
-      - "traefik.enable=true"
-
-      # define basic auth middleware for dashboard
-      - "traefik.http.middlewares.traefik-auth.basicauth.removeheader=true"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=fravia:$$2y$$05$$40nJoUODDt/bvBxQxllMweNBo0WGTqStV7nD1BB/2DsjFP9cqPYve" # CHANGE PASSWORD!! (user: foobar / pwd: foobar)
-      # how to set a real password:
-      # sudo apt-get install apache2-utils
-      # htpasswd -Bnb username password | sed -e s/\\$/\\$\\$/g
-
-      # define traefik dashboard router and service
-      - "traefik.http.routers.traefik.rule=Host(`yaroslavtanko.dev`)" # change hostname!
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.tls.certresolver=tlschallenge"
-      - "traefik.http.routers.traefik.entrypoints=web-secure"
-      - "traefik.http.routers.traefik.middlewares=traefik-auth, secHeaders@file, autodetectContenttype@file"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-
-    networks:
-      - traefik-servicenet
+    image: traefik:v3.0
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config:/etc/traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`yaroslavtanko.dev`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=httpchallenge"
+      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$9v4lPqGe$$8HLykKRYKi9Ev6.2mHPaj1"
 
   # whoami example container
   whoami:
-    image: traefik/whoami:v1.10
-    restart: unless-stopped
+    image: traefik/whoami
+    restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.entrypoints=web-secure"
-      - "traefik.http.routers.whoami.rule=Host(`yaroslavtanko.dev`)" # change hostname!
+      - "traefik.http.routers.whoami.rule=Host(`whoami.yaroslavtanko.dev`)"
       - "traefik.http.routers.whoami.tls=true"
-      - "traefik.http.routers.whoami.tls.certresolver=tlschallenge"
-      - "traefik.http.routers.whoami.middlewares=secHeaders@file"
-      - "traefik.http.services.whoami.loadbalancer.server.port=8081" # set port the container listenes to
-    networks:
-      - traefik-servicenet
+      - "traefik.http.routers.whoami.tls.certresolver=httpchallenge"
 
 networks:
   traefik-servicenet:
